@@ -233,7 +233,7 @@ nav.s{
 .nav-hire span{position:relative;z-index:1}
 .hamburger{
   display:none;flex-direction:column;gap:5px;
-  background:none;border:none;
+  background:none;border:none;cursor:pointer;
 }
 .hamburger span{
   display:block;width:24px;height:1.5px;
@@ -252,6 +252,7 @@ nav.s{
   font-family:var(--font-d);font-size:clamp(2rem,8vw,3.5rem);
   letter-spacing:.1em;text-transform:uppercase;
   color:var(--fg);text-decoration:none;transition:color .3s;
+  cursor:pointer;
 }
 .mob-nav a:hover{color:var(--c2)}
 
@@ -427,8 +428,10 @@ section{padding:110px 48px}
 /* Split-text animated title */
 .s-title{
   font-family:var(--font-d);font-size:clamp(40px,5.5vw,78px);
-  letter-spacing:.04em;line-height:.93;text-transform:uppercase;margin-bottom:30px;
-  overflow:hidden;
+  letter-spacing:.04em;line-height:.96;text-transform:uppercase;
+  margin-bottom:28px;
+  overflow:visible;   /* prevent last-line clip on mobile */
+  padding-bottom:4px; /* breathing room so chars don't bleed into siblings */
 }
 /* Each letter wrapped by JS in .char */
 .char{
@@ -438,9 +441,17 @@ section{padding:110px 48px}
   transition:opacity .5s var(--ease),transform .5s var(--ease);
 }
 .char.show{opacity:1;transform:translateY(0) rotateX(0deg)}
+/* Touch: chars always visible, no JS-triggered animation needed */
+@media(hover:none){
+  .char{opacity:1;transform:none}
+}
 hr.rule{border:none;border-top:1px solid rgba(255,255,255,.05);margin:0 48px}
 /* Reveal class */
 .rv{opacity:0;transform:translateY(44px);will-change:opacity,transform}
+/* Touch: ensure .rv items are visible when GSAP ScrollTrigger may not fire in time */
+@media(hover:none){
+  .rv{opacity:1;transform:none}
+}
 /* Clip-path reveal for lines */
 .rv-clip{
   clip-path:inset(0 0 100% 0);
@@ -454,6 +465,7 @@ hr.rule{border:none;border-top:1px solid rgba(255,255,255,.05);margin:0 48px}
   font-family:var(--font-h);font-size:.72rem;font-weight:700;
   letter-spacing:.2em;text-transform:uppercase;text-decoration:none;
   padding:14px 32px;position:relative;overflow:hidden;transition:color .35s;
+  cursor:pointer;
 }
 .btn-solid{background:var(--fg);color:var(--bg)}
 .btn-solid::before{
@@ -482,10 +494,15 @@ hr.rule{border:none;border-top:1px solid rgba(255,255,255,.05);margin:0 48px}
 /* Each word in about text gets wrapped for stagger reveal */
 .about-body .word{
   display:inline-block;
-  opacity:0;transform:translateY(14px);
+  opacity:0;transform:translateY(10px);
   transition:opacity .5s var(--ease),transform .5s var(--ease);
 }
 .about-body .word.show{opacity:1;transform:translateY(0)}
+/* On touch devices, words always visible (no scroll-trigger needed) */
+@media(hover:none){
+  .about-body .word{opacity:1;transform:none}
+  .about-body .word.show{opacity:1;transform:none}
+}
 .about-badges{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 32px}
 .badge{
   font-family:var(--font-h);font-size:.58rem;font-weight:700;
@@ -997,6 +1014,7 @@ hr.rule{border:none;border-top:1px solid rgba(255,255,255,.05);margin:0 48px}
   text-decoration:none;padding:11px 22px;
   border:1px solid rgba(255,255,255,.08);
   position:relative;overflow:hidden;transition:color .35s,border-color .35s;
+  cursor:pointer;
 }
 .soc-link::before{
   content:'';position:absolute;inset:0;
@@ -1019,25 +1037,167 @@ footer{
 .ft-heart span{color:var(--c1)}
 
 /* ═══════════════════════════════════════════════
-   RESPONSIVE
+   RESPONSIVE — TABLET  (≤1100px)
 ═══════════════════════════════════════════════ */
-@media(max-width:1024px){.skills-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1100px){
+  .skills-grid{grid-template-columns:repeat(2,1fr)}
+  #about .mw{gap:44px}
+  .s-title{font-size:clamp(36px,5vw,68px)}
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — MOBILE  (≤768px)
+   Fix every broken layout seen in screenshots
+═══════════════════════════════════════════════ */
 @media(max-width:768px){
-  section{padding:72px 24px}
-  hr.rule{margin:0 24px}
-  nav{padding:18px 24px}
-  nav.s{padding:14px 24px}
+
+  /* ── Global ── */
+  section{padding:60px 20px}
+  hr.rule{margin:0 20px}
+
+  /* ── Nav ── */
+  nav{padding:16px 20px}
+  nav.s{padding:12px 20px}
   .nav-links,.nav-hire{display:none}
   .hamburger{display:flex}
-  #about .mw{grid-template-columns:1fr;gap:44px}
-  .cg-intro{grid-template-columns:1fr}
-  .works-hdr{padding:0 24px}
-  .works-track{padding:12px 24px 22px}
-  .skills-grid{grid-template-columns:1fr}
-  footer{padding:24px;flex-direction:column;text-align:center}
+
+  /* ── Hero ── */
+  #hero{min-height:100svh}
+  #hTitle{font-size:clamp(44px,16vw,110px);letter-spacing:.04em}
+  #hSub{font-size:clamp(8px,2.8vw,12px);letter-spacing:.3em}
+  #hTag{font-size:11px}
   .h-corner,.h-hud{display:none}
-  #hTitle{font-size:clamp(48px,18vw,120px)}
+  .h-bar-t,.h-bar-b{height:8vh}
+
+  /* ── Section titles — fix font + spacing ── */
+  .s-title{
+    font-size:clamp(34px,9vw,54px);
+    line-height:.96;
+    margin-bottom:22px;  /* clear gap below title before body text */
+    overflow:visible;    /* prevent last-line clip */
+  }
+  .s-label{margin-bottom:10px;font-size:.56rem}
+
+  /* ── About ── */
+  #about .mw{
+    grid-template-columns:1fr;
+    gap:36px;
+  }
+  #about .about-left{
+    display:flex;flex-direction:column;gap:0;
+  }
+  /* Ensure title doesn't collide with body text */
+  #about .s-title{margin-bottom:20px}
+  .about-body{
+    font-size:.9rem;
+    line-height:1.72;
+    margin-bottom:14px;
+  }
+  .about-badges{margin:18px 0 24px;gap:6px}
+  .badge{font-size:.52rem;padding:5px 11px}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .stat{padding:20px 16px}
+  .stat-n{font-size:2.2rem}
+
+  /* ── Color grade ── */
+  .cg-intro{grid-template-columns:1fr;gap:28px;margin-bottom:32px}
+  .cg-desc{font-size:.88rem}
+  .palette-row{height:4px}
+  .palette-sw:hover{flex:3;height:14px}
+
+  /* ── Marquee ── */
+  .marquee-item{font-size:.65rem;padding:0 18px}
+
+  /* ── Works / Screening Room ── */
+  #works{padding:64px 0 52px}
+
+  /* Header — stack vertically */
+  .works-hdr{
+    padding:0 20px;
+    margin-bottom:20px;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+  }
+  /* Hide reel counter on mobile — not useful on touch */
+  .reel-display{display:none}
+  /* Nav row: full-width, wrap */
+  .works-nav{
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+  }
+  .works-nav .btn{
+    flex:1;justify-content:center;
+    padding:12px 16px;font-size:.65rem;
+    margin:0;
+  }
+  /* Hide film perfs on mobile — too small to see */
+  .film-perfs{display:none}
+  /* Hide NOW PLAYING on mobile */
+  .np-wrap{display:none}
+  /* Track */
+  .works-track{gap:6px;padding:12px 20px 20px}
+  /* Wider cards on narrow screens */
+  .wcard{flex:0 0 82vw}
+  /* Simplify card on mobile: hide film meta strips */
+  .ff-neg,.ff-counter{
+    padding:4px 10px;
+  }
+  .ff-neg-num,.ff-fps{font-size:.52rem}
+  .ff-neg-code{display:none}
+  /* Gradient edge fades match new padding */
+  .works-track-wrap::before{background:linear-gradient(to right,#060606 10px,transparent)}
+  .works-track-wrap::after {background:linear-gradient(to left, #060606 10px,transparent)}
+  .winfo{padding:10px 12px 8px}
+  .wtitle{font-size:1.05rem}
+  .wmeta{font-size:.65rem}
+  .wtag{font-size:.44rem;padding:2px 6px}
+
+  /* ── Skills ── */
+  .skills-grid{grid-template-columns:1fr;gap:2px}
+  .skill{padding:28px 22px}
+  .skill-num{font-size:2.2rem}
+  .sk-name{font-size:1.2rem}
+  .sk-desc{font-size:.78rem}
+
+  /* ── Contact ── */
+  #contact{padding:64px 20px}
+  .ct-head{font-size:clamp(38px,11vw,72px)}
+  .ct-email{font-size:13px;margin-bottom:32px}
+  .cf-row{grid-template-columns:1fr}
+  .cf-field{margin-bottom:36px}
+  .cf-label{font-size:.62rem;letter-spacing:.18em}
+  .cf-input{font-size:.9rem;padding:16px 0 9px}
+  .cf-submit{padding:16px;font-size:.72rem;letter-spacing:.18em}
+  .social-row{margin-top:32px;gap:8px}
+  .soc-link{padding:9px 16px;font-size:.55rem}
+
+  /* ── Footer ── */
+  footer{padding:20px;flex-direction:column;text-align:center;gap:8px}
+
+  /* ── Buttons ── */
+  .btn{padding:12px 24px;font-size:.68rem}
 }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — VERY SMALL  (≤380px)
+═══════════════════════════════════════════════ */
+@media(max-width:380px){
+  #hTitle{font-size:clamp(38px,14vw,88px)}
+  .s-title{font-size:clamp(30px,9.5vw,48px)}
+  .wcard{flex:0 0 90vw}
+  .ct-head{font-size:clamp(34px,12vw,60px)}
+  .cf-row{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .badge{font-size:.48rem;padding:4px 9px}
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════ */
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
@@ -1980,26 +2140,38 @@ function revealChars(el) {
 /* ════════════════════════════════════════
    SCROLL REVEAL — GSAP ScrollTrigger
 ════════════════════════════════════════ */
-// Generic .rv elements
-gsap.utils.toArray('.rv').forEach(el => {
-  // Skip .s-title — handled by char split
-  if (el.classList.contains('s-title')) return;
-  gsap.fromTo(el,
-    { opacity: 0, y: 44 },
-    { opacity: 1, y: 0, duration: .85, ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
-    }
-  );
-});
+// On touch devices — skip GSAP scroll reveals entirely (CSS handles visibility)
+const isTouchDevice = !isPointer;
 
-// Section titles: char reveal
-document.querySelectorAll('.s-title.rv').forEach(el => {
-  gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: .01,
-    scrollTrigger: { trigger: el, start: 'top 88%',
-      onEnter: () => revealChars(el)
-    }
+if (!isTouchDevice) {
+  // Generic .rv elements
+  gsap.utils.toArray('.rv').forEach(el => {
+    if (el.classList.contains('s-title')) return;
+    gsap.fromTo(el,
+      { opacity: 0, y: 44 },
+      { opacity: 1, y: 0, duration: .85, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+      }
+    );
   });
-});
+
+  // Section titles: char reveal (pointer only)
+  document.querySelectorAll('.s-title.rv').forEach(el => {
+    gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: .01,
+      scrollTrigger: { trigger: el, start: 'top 88%',
+        onEnter: () => revealChars(el)
+      }
+    });
+  });
+} else {
+  // Touch: show everything immediately, no animation delays
+  document.querySelectorAll('.rv').forEach(el => {
+    el.style.opacity = '1';
+    el.style.transform = 'none';
+  });
+  // Make all chars visible immediately
+  document.querySelectorAll('.char').forEach(c => c.classList.add('show'));
+}
 
 // Works cards: staggered
 gsap.utils.toArray('.wcard').forEach((card, i) => {
@@ -2027,15 +2199,19 @@ document.querySelectorAll('hr.rule').forEach(hr => {
   );
 });
 
-// About text word reveal (word by word)
+// About text word reveal
 function wrapWords(el) {
   const words = el.innerText.split(' ');
   el.innerHTML = words.map(w => `<span class="word">${w}</span>`).join(' ');
 }
 ['ab1','ab2'].forEach(id => {
   const el = document.getElementById(id);
-  if (el) {
-    wrapWords(el);
+  if (!el) return;
+  wrapWords(el);
+  if (isTouchDevice) {
+    // Touch: reveal immediately
+    el.querySelectorAll('.word').forEach(w => w.classList.add('show'));
+  } else {
     ScrollTrigger.create({
       trigger: el, start: 'top 88%',
       onEnter: () => {
@@ -2051,21 +2227,28 @@ function wrapWords(el) {
    COUNTER ANIMATION (stat numbers)
 ════════════════════════════════════════ */
 document.querySelectorAll('[data-count]').forEach(el => {
-  const target  = parseInt(el.dataset.count);
-  const suffix  = el.dataset.suffix || '';
-  let triggered = false;
-  ScrollTrigger.create({
-    trigger: el, start: 'top 85%',
-    onEnter: () => {
-      if (triggered) return; triggered = true;
-      gsap.to({ val: 0 }, {
-        val: target, duration: 2.2, ease: 'power2.out',
-        onUpdate: function() {
-          el.textContent = Math.round(this.targets()[0].val) + suffix;
-        }
-      });
-    }
-  });
+  const target = parseInt(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  const runCount = () => {
+    gsap.to({ val: 0 }, {
+      val: target, duration: 2, ease: 'power2.out',
+      onUpdate: function() {
+        el.textContent = Math.round(this.targets()[0].val) + suffix;
+      }
+    });
+  };
+  if (isTouchDevice) {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { runCount(); obs.disconnect(); } });
+    }, { threshold: .3 });
+    obs.observe(el);
+  } else {
+    let triggered = false;
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%',
+      onEnter: () => { if (triggered) return; triggered = true; runCount(); }
+    });
+  }
 });
 
 /* ════════════════════════════════════════
@@ -2073,14 +2256,24 @@ document.querySelectorAll('[data-count]').forEach(el => {
 ════════════════════════════════════════ */
 document.querySelectorAll('.sk-bar').forEach(bar => {
   const w = bar.dataset.width + '%';
-  let triggered = false;
-  ScrollTrigger.create({
-    trigger: bar, start: 'top 90%',
-    onEnter: () => {
-      if (triggered) return; triggered = true;
-      setTimeout(() => { bar.style.width = w; }, 200);
-    }
-  });
+  if (isTouchDevice) {
+    // Touch: animate after short delay when section is in view
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { setTimeout(() => { bar.style.width = w; }, 300); obs.disconnect(); }
+      });
+    }, { threshold: .2 });
+    obs.observe(bar);
+  } else {
+    let triggered = false;
+    ScrollTrigger.create({
+      trigger: bar, start: 'top 90%',
+      onEnter: () => {
+        if (triggered) return; triggered = true;
+        setTimeout(() => { bar.style.width = w; }, 200);
+      }
+    });
+  }
 });
 
 /* ════════════════════════════════════════
